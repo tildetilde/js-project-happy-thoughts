@@ -53,7 +53,7 @@ export default function App() {
   };
 
   return (
-    <div className="space-y-4 w-full max-w-md mx-auto">
+    <div className="mx-auto max-w-md my-4 space-y-4 px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0">
       <ThoughtForm onSubmit={addThought} />
       {loading ? (
         <Spinner />
