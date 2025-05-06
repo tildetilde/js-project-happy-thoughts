@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import ThoughtForm from "./components/ThoughtForm";
 import ThoughtList from "./components/ThoughtList";
+import Spinner from "./components/Spinner";
 
 export type Thought = {
   id: string;
@@ -11,6 +12,7 @@ export type Thought = {
 };
 
 export default function App() {
+  const [loading, setLoading] = useState(false);
   const [thoughts, setThoughts] = useState<Thought[]>([
     {
       id: "1",
@@ -53,7 +55,11 @@ export default function App() {
   return (
     <div className="space-y-4 w-full max-w-md mx-auto">
       <ThoughtForm onSubmit={addThought} />
-      <ThoughtList thoughts={thoughts} onLike={handleLike} />
+      {loading ? (
+        <Spinner />
+      ) : (
+        <ThoughtList thoughts={thoughts} onLike={handleLike} />
+      )}
     </div>
   );
 }
