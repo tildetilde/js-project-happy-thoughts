@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ThoughtForm from "./components/ThoughtForm";
 import ThoughtList from "./components/ThoughtList";
 import Spinner from "./components/Spinner";
@@ -13,26 +13,41 @@ export type Thought = {
 
 export default function App() {
   const [loading, setLoading] = useState(false);
-  const [thoughts, setThoughts] = useState<Thought[]>([
-    {
-      id: "1",
-      message: "I'm happy because we just moved into a new apartment!",
-      likes: 0,
-      timestamp: new Date(Date.now() - 30 * 1000), // 30 seconds ago
-    },
-    {
-      id: "2",
-      message: "It's my birthday!!!",
-      likes: 10,
-      timestamp: new Date(Date.now() - 10 * 60 * 1000), // 10 minutes ago
-    },
-    {
-      id: "3",
-      message: "I'm happy because the sun is out :)",
-      likes: 23,
-      timestamp: new Date(Date.now() - 15 * 60 * 1000), // 15 minutes ago
-    },
-  ]);
+  const [thoughts, setThoughts] = useState<Thought[]>([]);
+
+  useEffect(() => {
+    const fetchThoughts = async () => {
+      setLoading(true);
+      try {
+        const response = await fetch(
+          "https://happy-thoughts-ux7hkzgmwa-uc.a.run.app/thoughts"
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        const transformedData: Thought[] = [];
+
+        data.forEach((item: any) => {
+          transformedData.push({
+            id: item._id,
+            message: item.message,
+            likes: item.hearts,
+            timestamp: new Date(item.createdAt),
+          });
+        });
+
+        setThoughts(transformedData);
+      } catch (error) {
+        console.error("Error fetching thoughts:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchThoughts();
+  }, []);
 
   const addThought = (message: string) => {
     const newThought: Thought = {
