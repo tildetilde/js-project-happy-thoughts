@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import ThoughtForm from "./components/ThoughtForm";
 import ThoughtList from "./components/ThoughtList";
 import Spinner from "./components/Spinner";
+import MyLikedThoughts from "./components/MyLikedThoughts";
 
 export type Thought = {
   id: string;
@@ -14,6 +15,7 @@ export type Thought = {
 export default function App() {
   const [loading, setLoading] = useState(false);
   const [thoughts, setThoughts] = useState<Thought[]>([]);
+  const [likedThoughtIds, setLikedThoughtIds] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchThoughts = async () => {
@@ -47,6 +49,11 @@ export default function App() {
     };
 
     fetchThoughts();
+    // När användaren kommer tillbaka eller laddar om, ska appen läsa från localStorage för att veta vilka inlägg som redan gillats.
+    const stored = localStorage.getItem("likedThoughts");
+    if (stored) {
+      setLikedThoughtIds(JSON.parse(stored));
+    }
   }, []);
 
   const addThought = (message: string) => {
@@ -59,12 +66,34 @@ export default function App() {
     setThoughts([newThought, ...thoughts]);
   };
 
-  const handleLike = (id: string) => {
-    setThoughts(
-      thoughts.map((thought) =>
+  const handleLike = async (id: string) => {
+    // Optimistisk uppdatering av likes i state
+    setThoughts((prev) =>
+      prev.map((thought) =>
         thought.id === id ? { ...thought, likes: thought.likes + 1 } : thought
       )
     );
+
+    // Uppdatera API
+    try {
+      await fetch(
+        `https://happy-thoughts-ux7hkzgmwa-uc.a.run.app/thoughts/${id}/like`,
+        {
+          method: "POST",
+        }
+      );
+    } catch (error) {
+      console.error("Failed to send like to API", error);
+    }
+
+    // Lägg till ID i likedThoughtIds state OCH localStorage
+    setLikedThoughtIds((prev) => {
+      if (prev.includes(id)) return prev;
+      // När en användare klickar på hjärtat, ska id:t för det inlägget sparas lokalt i webbläsaren.
+      const updated = [...prev, id];
+      localStorage.setItem("likedThoughts", JSON.stringify(updated));
+      return updated;
+    });
   };
 
   return (
@@ -75,6 +104,7 @@ export default function App() {
       ) : (
         <ThoughtList thoughts={thoughts} onLike={handleLike} />
       )}
+      <MyLikedThoughts thoughts={thoughts} likedThoughtIds={likedThoughtIds} />
     </div>
   );
 }
