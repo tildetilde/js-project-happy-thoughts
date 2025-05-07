@@ -56,14 +56,44 @@ export default function App() {
     }
   }, []);
 
-  const addThought = (message: string) => {
-    const newThought: Thought = {
-      id: Date.now().toString(),
-      message,
-      likes: 0,
-      timestamp: new Date(),
-    };
-    setThoughts([newThought, ...thoughts]);
+  const addThought = async (message: string) => {
+    setPosting(true);
+    setPostError(null);
+    try {
+      const response = await fetch(
+        "https://happy-thoughts-ux7hkzgmwa-uc.a.run.app/thoughts",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData && errorData.error) {
+          throw new Error(errorData.error);
+        } else {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+      }
+
+      const newThoughtData = await response.json();
+      const newThought: Thought = {
+        id: newThoughtData._id,
+        message: newThoughtData.message,
+        likes: newThoughtData.hearts,
+        timestamp: new Date(newThoughtData.createdAt),
+      };
+      setThoughts([newThought, ...thoughts]);
+    } catch (error: any) {
+      console.error("Error posting thought:", error);
+      setPostError(error.message);
+    } finally {
+      setPosting(false);
+    }
   };
 
   const handleLike = async (id: string) => {
