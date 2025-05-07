@@ -2,19 +2,26 @@
 
 import React from "react";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 
 interface ThoughtFormProps {
   onSubmit: (message: string) => void;
+  isPosting: boolean;
 }
 
-export default function ThoughtForm({ onSubmit }: ThoughtFormProps) {
+export default function ThoughtForm({ onSubmit, isPosting, }: ThoughtFormProps) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
 
   const MAX_LENGTH = 140;
   const MIN_LENGTH = 5;
+
+  useEffect(() => {
+    if (isPosting) {
+      setError(null);
+    }
+  }, [isPosting]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +65,6 @@ export default function ThoughtForm({ onSubmit }: ThoughtFormProps) {
           onChange={handleChange}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
               handleSubmit(e);
             }
           }}
@@ -90,7 +96,7 @@ export default function ThoughtForm({ onSubmit }: ThoughtFormProps) {
           type="submit"
           className="w-full bg-pink-200 hover:bg-pink-300 text-gray-800 font-medium py-3 px-6 rounded-full transition flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
           aria-label="Send happy thought"
-          disabled={isOverLimit || message.trim().length < MIN_LENGTH}
+          disabled={isOverLimit || isPosting}
         >
           <Heart
             className="h-5 w-5 text-red-500"

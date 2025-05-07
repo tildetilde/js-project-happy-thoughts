@@ -16,6 +16,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [thoughts, setThoughts] = useState<Thought[]>([]);
   const [likedThoughtIds, setLikedThoughtIds] = useState<string[]>([]);
+  const [posting, setPosting] = useState(false);
 
   useEffect(() => {
     const fetchThoughts = async () => {
@@ -58,7 +59,6 @@ export default function App() {
 
   const addThought = async (message: string) => {
     setPosting(true);
-    setPostError(null);
     try {
       const response = await fetch(
         "https://happy-thoughts-ux7hkzgmwa-uc.a.run.app/thoughts",
@@ -70,27 +70,21 @@ export default function App() {
           body: JSON.stringify({ message }),
         }
       );
-
+  
       if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData && errorData.error) {
-          throw new Error(errorData.error);
-        } else {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        console.error(`HTTP error! Status: ${response.status}`);
+      } else {
+        const newThoughtData = await response.json();
+        const newThought: Thought = {
+          id: newThoughtData._id,
+          message: newThoughtData.message,
+          likes: newThoughtData.hearts,
+          timestamp: new Date(newThoughtData.createdAt),
+        };
+        setThoughts([newThought, ...thoughts]);
       }
-
-      const newThoughtData = await response.json();
-      const newThought: Thought = {
-        id: newThoughtData._id,
-        message: newThoughtData.message,
-        likes: newThoughtData.hearts,
-        timestamp: new Date(newThoughtData.createdAt),
-      };
-      setThoughts([newThought, ...thoughts]);
     } catch (error: any) {
       console.error("Error posting thought:", error);
-      setPostError(error.message);
     } finally {
       setPosting(false);
     }
@@ -128,7 +122,9 @@ export default function App() {
 
   return (
     <div className="mx-auto max-w-md my-4 space-y-4 px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0">
-      <ThoughtForm onSubmit={addThought} />
+      <ThoughtForm 
+      onSubmit={addThought}
+      isPosting={posting} />
       {loading ? (
         <Spinner />
       ) : (
