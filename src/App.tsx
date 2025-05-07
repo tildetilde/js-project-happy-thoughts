@@ -16,6 +16,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [thoughts, setThoughts] = useState<Thought[]>([]);
   const [likedThoughtIds, setLikedThoughtIds] = useState<string[]>([]);
+  const [posting, setPosting] = useState(false);
 
   useEffect(() => {
     const fetchThoughts = async () => {
@@ -56,14 +57,37 @@ export default function App() {
     }
   }, []);
 
-  const addThought = (message: string) => {
-    const newThought: Thought = {
-      id: Date.now().toString(),
-      message,
-      likes: 0,
-      timestamp: new Date(),
-    };
-    setThoughts([newThought, ...thoughts]);
+  const addThought = async (message: string) => {
+    setPosting(true);
+    try {
+      const response = await fetch(
+        "https://happy-thoughts-ux7hkzgmwa-uc.a.run.app/thoughts",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message }),
+        }
+      );
+  
+      if (!response.ok) {
+        console.error(`HTTP error! Status: ${response.status}`);
+      } else {
+        const newThoughtData = await response.json();
+        const newThought: Thought = {
+          id: newThoughtData._id,
+          message: newThoughtData.message,
+          likes: newThoughtData.hearts,
+          timestamp: new Date(newThoughtData.createdAt),
+        };
+        setThoughts([newThought, ...thoughts]);
+      }
+    } catch (error: any) {
+      console.error("Error posting thought:", error);
+    } finally {
+      setPosting(false);
+    }
   };
 
   const handleLike = async (id: string) => {
@@ -98,7 +122,9 @@ export default function App() {
 
   return (
     <div className="mx-auto max-w-md my-4 space-y-4 px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0">
-      <ThoughtForm onSubmit={addThought} />
+      <ThoughtForm 
+      onSubmit={addThought}
+      isPosting={posting} />
       {loading ? (
         <Spinner />
       ) : (
