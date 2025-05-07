@@ -4,10 +4,11 @@ import ThoughtItem from "./ThoughtItem";
 
 interface ThoughtListProps {
   thoughts: Thought[];
-  onLike: (id: string) => void;
+  onLike: (id: string) => Promise<void>;
+  isLiking: string | null;
 }
 
-export default function ThoughtList({ thoughts, onLike }: ThoughtListProps) {
+export default function ThoughtList({ thoughts, onLike, isLiking }: ThoughtListProps) {
   const [newThoughts, setNewThoughts] = useState<Set<string>>(new Set());
 
   // Add animation to new thoughts
@@ -56,6 +57,7 @@ export default function ThoughtList({ thoughts, onLike }: ThoughtListProps) {
             isNew={isNew}
             onLike={onLike}
             formatTimestamp={formatTimestamp}
+            isLiking={isLiking}
           />
         );
       })}

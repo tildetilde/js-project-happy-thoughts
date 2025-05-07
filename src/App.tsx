@@ -14,6 +14,9 @@ export type Thought = {
 export default function App() {
   const [loading, setLoading] = useState(false);
   const [thoughts, setThoughts] = useState<Thought[]>([]);
+  const [posting, setPosting] = useState(false);
+  const [postError, setPostError] = useState<string | null>(null);
+  const [liking, setLiking] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchThoughts = async () => {
@@ -49,31 +52,84 @@ export default function App() {
     fetchThoughts();
   }, []);
 
-  const addThought = (message: string) => {
-    const newThought: Thought = {
-      id: Date.now().toString(),
-      message,
-      likes: 0,
-      timestamp: new Date(),
-    };
-    setThoughts([newThought, ...thoughts]);
+  const addThought = async (message: string) => {
+    setPosting(true);
+    setPostError(null);
+    try {
+      const response = await fetch(
+        "https://happy-thoughts-ux7hkzgmwa-uc.a.run.app/thoughts",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ message }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        if (errorData && errorData.error) {
+          throw new Error(errorData.error);
+        } else {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+      }
+
+      const newThoughtData = await response.json();
+      const newThought: Thought = {
+        id: newThoughtData._id,
+        message: newThoughtData.message,
+        likes: newThoughtData.hearts,
+        timestamp: new Date(newThoughtData.createdAt),
+      };
+      setThoughts([newThought, ...thoughts]);
+    } catch (error: any) {
+      console.error("Error posting thought:", error);
+      setPostError(error.message);
+    } finally {
+      setPosting(false);
+    }
   };
 
-  const handleLike = (id: string) => {
-    setThoughts(
-      thoughts.map((thought) =>
-        thought.id === id ? { ...thought, likes: thought.likes + 1 } : thought
-      )
-    );
+  const handleLike = async (id: string) => {
+    setLiking(id);
+    try {
+      const response = await fetch(
+        `https://happy-thoughts-ux7hkzgmwa-uc.a.run.app/thoughts/${id}/like`,
+        {
+          method: "POST",
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      const updatedThoughtData = await response.json();
+      setThoughts((prevThoughts) =>
+        prevThoughts.map((thought) =>
+          thought.id === id ? { ...thought, likes: updatedThoughtData.hearts } : thought
+        )
+      );
+    } catch (error) {
+      console.error(`Error liking thought ${id}:`, error);
+    } finally {
+      setLiking(null);
+    }
   };
 
   return (
     <div className="mx-auto max-w-md my-4 space-y-4 px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0">
-      <ThoughtForm onSubmit={addThought} />
+      <ThoughtForm
+        onSubmit={addThought}
+        isPosting={posting}
+        postError={postError}
+      />
       {loading ? (
         <Spinner />
       ) : (
-        <ThoughtList thoughts={thoughts} onLike={handleLike} />
+        <ThoughtList thoughts={thoughts} onLike={handleLike} isLiking={liking}/>
       )}
     </div>
   );
