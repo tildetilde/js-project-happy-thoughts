@@ -96,7 +96,7 @@ export default function ThoughtForm({ onSubmit, isPosting, }: ThoughtFormProps) 
           type="submit"
           className="w-full bg-pink-200 hover:bg-pink-300 text-gray-800 font-medium py-3 px-6 rounded-full transition flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-pink-300 focus:ring-offset-2"
           aria-label="Send happy thought"
-          disabled={isOverLimit || isPosting}
+          disabled={isPosting}
         >
           <Heart
             className="h-5 w-5 text-red-500"
