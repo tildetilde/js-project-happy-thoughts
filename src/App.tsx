@@ -70,7 +70,7 @@ export default function App() {
           body: JSON.stringify({ message }),
         }
       );
-  
+
       if (!response.ok) {
         console.error(`HTTP error! Status: ${response.status}`);
       } else {
@@ -122,15 +122,18 @@ export default function App() {
 
   return (
     <div className="mx-auto max-w-md my-4 space-y-4 px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0">
-      <ThoughtForm 
-      onSubmit={addThought}
-      isPosting={posting} />
+      <ThoughtForm onSubmit={addThought} isPosting={posting} />
       {loading ? (
         <Spinner />
       ) : (
-        <ThoughtList thoughts={thoughts} onLike={handleLike} />
+        <>
+          <ThoughtList thoughts={thoughts} onLike={handleLike} />
+          <MyLikedThoughts
+            thoughts={thoughts}
+            likedThoughtIds={likedThoughtIds}
+          />
+        </>
       )}
-      <MyLikedThoughts thoughts={thoughts} likedThoughtIds={likedThoughtIds} />
     </div>
   );
 }
