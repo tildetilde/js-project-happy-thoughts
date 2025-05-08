@@ -19,14 +19,10 @@ export default function ThoughtItem({
 }: ThoughtItemProps) {
   return (
     <div
-      className={`bg-white p-6 rounded-lg shadow-sm border border-gray-200 transition-all duration-500 ${
+      className={`bg-white p-6 rounded-lg border border-gray-200 transition-all duration-300 hover:shadow-pop-br hover:!-translate-x-2 hover:!-translate-y-2 ${
         isNew ? "animate-fade-in" : ""
       }`}
-      style={{
-        boxShadow:
-          "0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08)",
-      }}
-    >
+      >
       <p className="text-lg text-gray-800 mb-4 font-['Courier_New'] font-medium text-pretty">
         {thought.message}
       </p>
