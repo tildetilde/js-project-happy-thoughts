@@ -10,7 +10,7 @@ interface ThoughtFormProps {
   isPosting: boolean;
 }
 
-export default function ThoughtForm({ onSubmit, isPosting, }: ThoughtFormProps) {
+export default function ThoughtForm({ onSubmit, isPosting }: ThoughtFormProps) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState<string | null>(null);
 
@@ -57,7 +57,7 @@ export default function ThoughtForm({ onSubmit, isPosting, }: ThoughtFormProps) 
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <form onSubmit={handleSubmit}>
         <h2 className="text-xl font-medium text-gray-700 mb-3">
-          What&apos;s making you thankful right now?
+          Is something making you happy right now?
         </h2>
 
         <textarea
@@ -70,7 +70,7 @@ export default function ThoughtForm({ onSubmit, isPosting, }: ThoughtFormProps) 
           }}
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-300 transition"
           rows={4}
-          placeholder="Share your thankful thought..."
+          placeholder="Share your happy thought..."
           aria-label="Your happy thought"
           aria-describedby="character-counter"
           aria-invalid={isOverLimit}
@@ -103,7 +103,7 @@ export default function ThoughtForm({ onSubmit, isPosting, }: ThoughtFormProps) 
             fill="currentColor"
             aria-hidden="true"
           />
-          <span>Send Thankful Thought</span>
+          <span>Send Happy Thought</span>
           <Heart
             className="h-5 w-5 text-red-500"
             fill="currentColor"

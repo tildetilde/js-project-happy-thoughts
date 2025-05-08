@@ -42,7 +42,7 @@ export default function ThoughtList({ thoughts, onLike }: ThoughtListProps) {
   };
 
   return (
-    <div className="space-y-4" role="feed" aria-label="Thankful thoughts">
+    <div className="space-y-4" role="feed" aria-label="Happy thoughts">
       {thoughts.map((thought) => {
         const isNew = newThoughts.has(thought.id);
         if (thought === thoughts[0] && !newThoughts.has(thought.id)) {
