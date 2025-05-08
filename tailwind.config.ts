@@ -95,6 +95,10 @@ const config: Config = {
         "accordion-up": "accordion-up 0.2s ease-out",
         heartbeat: "heartbeat 0.6s ease-in-out",
       },
+      boxShadow: {
+        'pop-br': '1px 1px #3e3e3e, 2px 2px #3e3e3e, 3px 3px #3e3e3e, 4px 4px #3e3e3e, 5px 5px #3e3e3e, 6px 6px #3e3e3e, 7px 7px #3e3e3e, 8px 8px #3e3e3e',
+        'pop-br-initial': '0 0 #3e3e3e, 0 0 #3e3e3e, 0 0 #3e3e3e, 0 0 #3e3e3e, 0 0 #3e3e3e, 0 0 #3e3e3e, 0 0 #3e3e3e, 0 0 #3e3e3e',
+      },
     },
   },
   plugins: [],
