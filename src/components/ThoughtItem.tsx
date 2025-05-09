@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Heart } from "lucide-react";
 import type { Thought } from "../App";
 import LikeCounter from "./LikeCounter";
+import loveSound from "/heartbeat.wav";
 
 interface ThoughtItemProps {
   thought: Thought;
@@ -21,6 +22,9 @@ export default function ThoughtItem({
   const handleClick = () => {
     onLike(thought.id);
     setAnimate(true);
+    const audio = new Audio(loveSound);
+    audio.volume = 0.2;
+    audio.play();
     setTimeout(() => setAnimate(false), 600); // matcha animationens längd
   };
 
@@ -29,7 +33,7 @@ export default function ThoughtItem({
       className={`bg-white p-6 rounded-lg border border-gray-200 transition-all duration-300 hover:shadow-pop-br hover:!-translate-x-2 hover:!-translate-y-2 ${
         isNew ? "animate-fade-in" : ""
       }`}
-      >
+    >
       <p className="text-lg text-gray-800 mb-4 font-['Courier_New'] font-medium text-pretty">
         {thought.message}
       </p>

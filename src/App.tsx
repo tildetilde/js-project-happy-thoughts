@@ -4,6 +4,7 @@ import ThoughtForm from "./components/ThoughtForm";
 import ThoughtList from "./components/ThoughtList";
 import Spinner from "./components/Spinner";
 import MyLikedThoughts from "./components/MyLikedThoughts";
+import plingSound from "/ding.wav";
 
 export type Thought = {
   id: string;
@@ -82,6 +83,10 @@ export default function App() {
           timestamp: new Date(newThoughtData.createdAt),
         };
         setThoughts([newThought, ...thoughts]);
+
+        const audio = new Audio(plingSound);
+        audio.volume = 0.2;
+        audio.play();
       }
     } catch (error: any) {
       console.error("Error posting thought:", error);
