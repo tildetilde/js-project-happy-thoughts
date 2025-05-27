@@ -24,7 +24,7 @@ export default function App() {
       setLoading(true);
       try {
         const response = await fetch(
-          "https://happy-thoughts-ux7hkzgmwa-uc.a.run.app/thoughts"
+          "https://happy-thoughts-api-4ful.onrender.com/thoughts"
         );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
@@ -62,7 +62,7 @@ export default function App() {
     setPosting(true);
     try {
       const response = await fetch(
-        "https://happy-thoughts-ux7hkzgmwa-uc.a.run.app/thoughts",
+        "https://happy-thoughts-api-4ful.onrender.com/thoughts",
         {
           method: "POST",
           headers: {
@@ -106,7 +106,7 @@ export default function App() {
     // Uppdatera API
     try {
       await fetch(
-        `https://happy-thoughts-ux7hkzgmwa-uc.a.run.app/thoughts/${id}/like`,
+        `https://happy-thoughts-api-4ful.onrender.com/thoughts/${id}/like`,
         {
           method: "POST",
         }
