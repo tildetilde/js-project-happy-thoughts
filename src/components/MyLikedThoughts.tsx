@@ -13,7 +13,7 @@ export default function MyLikedThoughts({
   const likedThoughts = thoughts.filter((t) => likedThoughtIds.includes(t.id));
 
   return (
-    <div className="text-center text-sm text-gray-500" aria-live="polite">
+    <div className="text-center text-sm text-gray-700" aria-live="polite">
       You’ve liked {likedThoughts.length}{" "}
       {likedThoughts.length === 1 ? "thought" : "thoughts"}
     </div>

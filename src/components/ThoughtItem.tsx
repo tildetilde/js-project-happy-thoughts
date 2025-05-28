@@ -50,7 +50,7 @@ export default function ThoughtItem({
           >
             <Heart
               className={`h-5 w-5 transition-transform duration-300 ${
-                thought.likes > 0 ? "text-red-500" : "text-gray-500"
+                thought.likes > 0 ? "text-red-500" : "text-gray-700"
               } ${animate ? "animate-heartbeat" : ""}`}
               fill="currentColor"
               aria-hidden="true"
@@ -59,7 +59,7 @@ export default function ThoughtItem({
           <LikeCounter count={thought.likes} />
         </button>
         <span
-          className="text-gray-400 text-sm"
+          className="text-gray-700 text-sm"
           aria-label={`Posted ${formatTimestamp(thought.timestamp)}`}
         >
           {formatTimestamp(thought.timestamp)}

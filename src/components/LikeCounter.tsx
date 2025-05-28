@@ -6,12 +6,14 @@ type LikeCounterProps = {
 
 function LikeCounter({ count }: LikeCounterProps) {
   return (
-    <span
-      className="text-gray-500"
-      aria-label={`This thought has ${count} ${count === 1 ? "like" : "likes"}`}
-    >
-      x {count}
-    </span>
+    <>
+      <span className="sr-only">
+        {count === 1 ? "1 like" : `${count} likes`}
+      </span>
+      <span aria-hidden="true" className="text-gray-700">
+        x {count}
+      </span>
+    </>
   );
 }
 
