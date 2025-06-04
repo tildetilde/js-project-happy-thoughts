@@ -77,9 +77,9 @@ export default function ThoughtItem({
             height="24"
             fill="none"
             stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             className="trash-icon"
           >
             <rect x="6" y="7" width="12" height="13" rx="2" />
