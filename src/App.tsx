@@ -13,6 +13,8 @@ export type Thought = {
   timestamp: Date;
 };
 
+const API_BASE = "https://happy-thoughts-api-5hw3.onrender.com";
+
 export default function App() {
   const [loading, setLoading] = useState(false);
   const [thoughts, setThoughts] = useState<Thought[]>([]);
@@ -23,9 +25,7 @@ export default function App() {
     const fetchThoughts = async () => {
       setLoading(true);
       try {
-        const response = await fetch(
-          "https://happy-thoughts-api-4ful.onrender.com/thoughts"
-        );
+        const response = await fetch(`${API_BASE}/thoughts`);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -33,7 +33,7 @@ export default function App() {
         const data = await response.json();
         const transformedData: Thought[] = [];
 
-        data.forEach((item: any) => {
+        data.thoughts.forEach((item: any) => {
           transformedData.push({
             id: item._id,
             message: item.message,
@@ -51,7 +51,7 @@ export default function App() {
     };
 
     fetchThoughts();
-    // När användaren kommer tillbaka eller laddar om, ska appen läsa från localStorage för att veta vilka inlägg som redan gillats.
+
     const stored = localStorage.getItem("likedThoughts");
     if (stored) {
       setLikedThoughtIds(JSON.parse(stored));
@@ -61,16 +61,13 @@ export default function App() {
   const addThought = async (message: string) => {
     setPosting(true);
     try {
-      const response = await fetch(
-        "https://happy-thoughts-api-4ful.onrender.com/thoughts",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ message }),
-        }
-      );
+      const response = await fetch(`${API_BASE}/thoughts`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message }),
+      });
 
       if (!response.ok) {
         console.error(`HTTP error! Status: ${response.status}`);
@@ -96,29 +93,22 @@ export default function App() {
   };
 
   const handleLike = async (id: string) => {
-    // Optimistisk uppdatering av likes i state
     setThoughts((prev) =>
       prev.map((thought) =>
         thought.id === id ? { ...thought, likes: thought.likes + 1 } : thought
       )
     );
 
-    // Uppdatera API
     try {
-      await fetch(
-        `https://happy-thoughts-api-4ful.onrender.com/thoughts/${id}/like`,
-        {
-          method: "POST",
-        }
-      );
+      await fetch(`${API_BASE}/thoughts/${id}/like`, {
+        method: "POST",
+      });
     } catch (error) {
       console.error("Failed to send like to API", error);
     }
 
-    // Lägg till ID i likedThoughtIds state OCH localStorage
     setLikedThoughtIds((prev) => {
       if (prev.includes(id)) return prev;
-      // När en användare klickar på hjärtat, ska id:t för det inlägget sparas lokalt i webbläsaren.
       const updated = [...prev, id];
       localStorage.setItem("likedThoughts", JSON.stringify(updated));
       return updated;

@@ -79,7 +79,7 @@ export default function ThoughtForm({ onSubmit, isPosting }: ThoughtFormProps) {
         <div
           id="character-counter"
           className={`text-sm ${
-            isOverLimit ? "text-red-500" : "text-gray-500"
+            isOverLimit ? "text-red-500" : "text-gray-700"
           }`}
           aria-live="polite"
         >
