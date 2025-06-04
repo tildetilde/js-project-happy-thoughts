@@ -92,6 +92,23 @@ export default function App() {
     }
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await fetch(`${API_BASE}/thoughts/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      // Ta bort från state om lyckat
+      setThoughts((prev) => prev.filter((thought) => thought.id !== id));
+    } catch (error) {
+      console.error("Failed to delete thought", error);
+    }
+  };
+
   const handleLike = async (id: string) => {
     setThoughts((prev) =>
       prev.map((thought) =>
@@ -101,7 +118,7 @@ export default function App() {
 
     try {
       await fetch(`${API_BASE}/thoughts/${id}/like`, {
-        method: "POST",
+        method: "PATCH",
       });
     } catch (error) {
       console.error("Failed to send like to API", error);
@@ -122,7 +139,11 @@ export default function App() {
         <Spinner />
       ) : (
         <>
-          <ThoughtList thoughts={thoughts} onLike={handleLike} />
+          <ThoughtList
+            thoughts={thoughts}
+            onLike={handleLike}
+            onDelete={handleDelete}
+          />
           <MyLikedThoughts
             thoughts={thoughts}
             likedThoughtIds={likedThoughtIds}

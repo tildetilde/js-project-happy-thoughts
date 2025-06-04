@@ -8,6 +8,7 @@ interface ThoughtItemProps {
   thought: Thought;
   isNew: boolean;
   onLike: (id: string) => void;
+  onDelete: (id: string) => void;
   formatTimestamp: (date: Date) => string;
 }
 
@@ -15,6 +16,7 @@ export default function ThoughtItem({
   thought,
   isNew,
   onLike,
+  onDelete,
   formatTimestamp,
 }: ThoughtItemProps) {
   const [animate, setAnimate] = useState(false);
@@ -64,6 +66,29 @@ export default function ThoughtItem({
         >
           {formatTimestamp(thought.timestamp)}
         </span>
+        <button
+          onClick={() => onDelete(thought.id)}
+          className="ml-2 transition-transform duration-200 hover:scale-110 hover:text-red-600 focus:outline-none animate-fade-in"
+          aria-label="Delete this thought"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            className="trash-icon"
+          >
+            <rect x="6" y="7" width="12" height="13" rx="2" />
+            <path d="M9 7V4h6v3" />
+            <line x1="4" y1="7" x2="20" y2="7" />
+            <line x1="10" y1="11" x2="10" y2="16" />
+            <line x1="14" y1="11" x2="14" y2="16" />
+          </svg>
+        </button>
       </div>
     </div>
   );
