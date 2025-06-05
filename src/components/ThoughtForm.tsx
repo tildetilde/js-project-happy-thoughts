@@ -57,7 +57,7 @@ export default function ThoughtForm({ onSubmit, isPosting }: ThoughtFormProps) {
     <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
       <form onSubmit={handleSubmit}>
         <h2 className="text-xl font-medium text-gray-700 mb-3">
-          Is something making you happy right now?
+          Is something bringing you happiness right now?
         </h2>
 
         <textarea
@@ -70,7 +70,7 @@ export default function ThoughtForm({ onSubmit, isPosting }: ThoughtFormProps) {
           }}
           className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-200 focus:border-pink-300 transition"
           rows={4}
-          placeholder="Share your happy thought..."
+          placeholder="Share a happy thought..."
           aria-label="Your happy thought"
           aria-describedby="character-counter"
           aria-invalid={isOverLimit}
