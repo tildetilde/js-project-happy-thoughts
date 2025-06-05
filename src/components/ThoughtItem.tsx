@@ -78,6 +78,20 @@ export default function ThoughtItem({
           <textarea
             value={editMessage}
             onChange={(e) => setEditMessage(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                if (!isTooShort && !isOverLimit) {
+                  onEdit(thought.id, editMessage);
+                  setIsEditing(false);
+                }
+              }
+              if (e.key === "Escape") {
+                e.preventDefault();
+                setIsEditing(false);
+                setEditMessage(thought.message);
+              }
+            }}
             className="w-full p-2 border border-gray-300 rounded-md"
             rows={3}
           />
