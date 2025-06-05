@@ -92,6 +92,38 @@ export default function App() {
     }
   };
 
+  const handleEdit = async (id: string, newMessage: string) => {
+    try {
+      const response = await fetch(`${API_BASE}/thoughts/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: newMessage }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      const updated = await response.json();
+
+      setThoughts((prev) =>
+        prev.map((thought) =>
+          thought.id === id
+            ? {
+                ...thought,
+                message: updated.message || newMessage,
+                timestamp: new Date(updated.updatedAt || thought.timestamp),
+              }
+            : thought
+        )
+      );
+    } catch (error) {
+      console.error("Failed to edit thought", error);
+    }
+  };
+
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`${API_BASE}/thoughts/${id}`, {
@@ -143,6 +175,7 @@ export default function App() {
             thoughts={thoughts}
             onLike={handleLike}
             onDelete={handleDelete}
+            onEdit={handleEdit}
           />
           <MyLikedThoughts
             thoughts={thoughts}

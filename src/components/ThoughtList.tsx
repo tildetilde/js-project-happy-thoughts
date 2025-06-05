@@ -6,12 +6,14 @@ interface ThoughtListProps {
   thoughts: Thought[];
   onLike: (id: string) => void;
   onDelete: (id: string) => void;
+  onEdit: (id: string, newMessage: string) => void;
 }
 
 export default function ThoughtList({
   thoughts,
   onLike,
   onDelete,
+  onEdit,
 }: ThoughtListProps) {
   const [newThoughts, setNewThoughts] = useState<Set<string>>(new Set());
 
@@ -61,6 +63,7 @@ export default function ThoughtList({
             isNew={isNew}
             onLike={onLike}
             onDelete={onDelete}
+            onEdit={onEdit}
             formatTimestamp={formatTimestamp}
           />
         );
