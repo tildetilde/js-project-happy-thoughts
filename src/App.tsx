@@ -5,6 +5,8 @@ import ThoughtList from "./components/ThoughtList";
 import Spinner from "./components/Spinner";
 import MyLikedThoughts from "./components/MyLikedThoughts";
 import plingSound from "/ding.wav";
+import LoginForm from "./components/LoginForm";
+import SignupForm from "./components/SignupForm";
 
 export type Thought = {
   id: string;
@@ -16,10 +18,28 @@ export type Thought = {
 const API_BASE = "https://happy-thoughts-api-5hw3.onrender.com";
 
 export default function App() {
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("token")
+  );
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(!!token);
   const [loading, setLoading] = useState(false);
   const [thoughts, setThoughts] = useState<Thought[]>([]);
   const [likedThoughtIds, setLikedThoughtIds] = useState<string[]>([]);
   const [posting, setPosting] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
+  const [showSignup, setShowSignup] = useState(false);
+
+  const login = (newToken: string) => {
+    localStorage.setItem("token", newToken);
+    setToken(newToken);
+    setIsLoggedIn(true);
+  };
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+    setIsLoggedIn(false);
+  };
 
   useEffect(() => {
     const fetchThoughts = async () => {
@@ -58,13 +78,26 @@ export default function App() {
     }
   }, []);
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      setShowLogin(false);
+      setShowSignup(false);
+    }
+  }, [isLoggedIn]);
+
   const addThought = async (message: string) => {
+    if (!token) {
+      alert("Please log in to post a thought.");
+      return;
+    }
+
     setPosting(true);
     try {
       const response = await fetch(`${API_BASE}/thoughts`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ message }),
       });
@@ -98,6 +131,7 @@ export default function App() {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
         },
         body: JSON.stringify({ message: newMessage }),
       });
@@ -128,6 +162,9 @@ export default function App() {
     try {
       const response = await fetch(`${API_BASE}/thoughts/${id}`, {
         method: "DELETE",
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
       });
 
       if (!response.ok) {
@@ -166,7 +203,43 @@ export default function App() {
 
   return (
     <div className="mx-auto max-w-md my-4 space-y-4 px-4 sm:px-4 md:px-0 lg:px-0 xl:px-0">
+      <nav className="flex justify-between items-center mb-4">
+        {isLoggedIn ? (
+          <button
+            onClick={logout}
+            className="text-sm text-pink-600 hover:underline"
+          >
+            Log out
+          </button>
+        ) : (
+          <div className="flex gap-4">
+            <button
+              onClick={() => {
+                setShowLogin(true);
+                setShowSignup(false);
+              }}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Log in
+            </button>
+            <button
+              onClick={() => {
+                setShowSignup(true);
+                setShowLogin(false);
+              }}
+              className="text-sm text-green-600 hover:underline"
+            >
+              Sign up
+            </button>
+          </div>
+        )}
+      </nav>
+
+      {!isLoggedIn && showLogin && <LoginForm onLogin={login} />}
+      {!isLoggedIn && showSignup && <SignupForm onSignup={login} />}
+
       <ThoughtForm onSubmit={addThought} isPosting={posting} />
+
       {loading ? (
         <Spinner />
       ) : (
