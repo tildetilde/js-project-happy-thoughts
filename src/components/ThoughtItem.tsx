@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Heart } from "lucide-react";
 import type { Thought } from "../App";
 import LikeCounter from "./LikeCounter";
-import loveSound from "/heartbeat.wav";
+
+const loveSound = "/heartbeat.wav";
 
 interface ThoughtItemProps {
   thought: Thought;

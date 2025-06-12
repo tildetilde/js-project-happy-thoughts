@@ -39,7 +39,7 @@ export default function LoginForm({ onLogin }: Props) {
       onSubmit={handleLogin}
       className="bg-white p-4 border rounded space-y-3"
     >
-      <h2 className="text-xl font-semibold">Logga in</h2>
+      <h2 className="text-xl font-semibold">Log in</h2>
       <input
         className="w-full border p-2 rounded"
         type="email"

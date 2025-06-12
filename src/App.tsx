@@ -4,9 +4,10 @@ import ThoughtForm from "./components/ThoughtForm";
 import ThoughtList from "./components/ThoughtList";
 import Spinner from "./components/Spinner";
 import MyLikedThoughts from "./components/MyLikedThoughts";
-import plingSound from "/ding.wav";
 import LoginForm from "./components/LoginForm";
 import SignupForm from "./components/SignupForm";
+
+const plingSound = "/ding.wav";
 
 export type Thought = {
   id: string;
