@@ -27,6 +27,7 @@ export default function LoginForm({ onLogin }: Props) {
       if (!response.ok) {
         setError(data.message || "Login failed");
       } else {
+        localStorage.setItem("token", data.token);
         onLogin(data.token);
       }
     } catch (err) {

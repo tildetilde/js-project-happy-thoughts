@@ -12,6 +12,7 @@ interface ThoughtItemProps {
   onDelete: (id: string) => void;
   onEdit: (id: string, newMessage: string) => void;
   formatTimestamp: (date: Date) => string;
+  currentUserId: string | null;
 }
 
 export default function ThoughtItem({
@@ -21,10 +22,13 @@ export default function ThoughtItem({
   onDelete,
   onEdit,
   formatTimestamp,
+  currentUserId,
 }: ThoughtItemProps) {
   const [animate, setAnimate] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editMessage, setEditMessage] = useState(thought.message);
+
+  const isOwner = currentUserId === thought.createdBy;
 
   const MAX_LENGTH = 140;
   const MIN_LENGTH = 5;
@@ -157,54 +161,57 @@ export default function ThoughtItem({
           {formatTimestamp(thought.timestamp)}
         </span>
 
-        <div className="flex items-center gap-2">
-          {!isEditing && (
+        {/* Visa endast redigera/ta bort för ägaren */}
+        {isOwner && (
+          <div className="flex items-center gap-2">
+            {!isEditing && (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="transition-transform duration-200 hover:scale-110 hover:text-red-600 focus:outline-none animate-fade-in"
+                aria-label="Edit this thought"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  fill="none"
+                  stroke="#333"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="edit-icon"
+                >
+                  <path d="M16.5 3.5l4 4L7 21H3v-4L16.5 3.5z" />
+                  <path d="M15 5.5l3.5 3.5" />
+                </svg>
+              </button>
+            )}
+
             <button
-              onClick={() => setIsEditing(true)}
+              onClick={() => onDelete(thought.id)}
               className="transition-transform duration-200 hover:scale-110 hover:text-red-600 focus:outline-none animate-fade-in"
-              aria-label="Edit this thought"
+              aria-label="Delete this thought"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"
                 height="24"
                 fill="none"
-                stroke="#333"
+                stroke="currentColor"
                 strokeWidth="1.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                className="edit-icon"
+                className="trash-icon"
               >
-                <path d="M16.5 3.5l4 4L7 21H3v-4L16.5 3.5z" />
-                <path d="M15 5.5l3.5 3.5" />
+                <rect x="6" y="7" width="12" height="13" rx="2" />
+                <path d="M9 7V4h6v3" />
+                <line x1="4" y1="7" x2="20" y2="7" />
+                <line x1="10" y1="11" x2="10" y2="16" />
+                <line x1="14" y1="11" x2="14" y2="16" />
               </svg>
             </button>
-          )}
-
-          <button
-            onClick={() => onDelete(thought.id)}
-            className="transition-transform duration-200 hover:scale-110 hover:text-red-600 focus:outline-none animate-fade-in"
-            aria-label="Delete this thought"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="24"
-              height="24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="trash-icon"
-            >
-              <rect x="6" y="7" width="12" height="13" rx="2" />
-              <path d="M9 7V4h6v3" />
-              <line x1="4" y1="7" x2="20" y2="7" />
-              <line x1="10" y1="11" x2="10" y2="16" />
-              <line x1="14" y1="11" x2="14" y2="16" />
-            </svg>
-          </button>
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );

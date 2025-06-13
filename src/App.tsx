@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { jwtDecode } from "jwt-decode";
 import ThoughtForm from "./components/ThoughtForm";
 import ThoughtList from "./components/ThoughtList";
 import Spinner from "./components/Spinner";
@@ -7,16 +8,22 @@ import MyLikedThoughts from "./components/MyLikedThoughts";
 import LoginForm from "./components/LoginForm";
 import SignupForm from "./components/SignupForm";
 
-const plingSound = "/ding.wav";
-
 export type Thought = {
   id: string;
   message: string;
   likes: number;
   timestamp: Date;
+  createdBy: string;
+};
+
+type DecodedToken = {
+  id: string;
+  exp: number;
+  iat: number;
 };
 
 const API_BASE = "https://happy-thoughts-api-5hw3.onrender.com";
+const plingSound = "/ding.wav";
 
 export default function App() {
   const [token, setToken] = useState<string | null>(
@@ -29,6 +36,7 @@ export default function App() {
   const [posting, setPosting] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   const login = (newToken: string) => {
     localStorage.setItem("token", newToken);
@@ -38,8 +46,11 @@ export default function App() {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("likedThoughts");
     setToken(null);
     setIsLoggedIn(false);
+    setCurrentUserId(null);
+    setLikedThoughtIds([]);
   };
 
   useEffect(() => {
@@ -52,16 +63,13 @@ export default function App() {
         }
 
         const data = await response.json();
-        const transformedData: Thought[] = [];
-
-        data.thoughts.forEach((item: any) => {
-          transformedData.push({
-            id: item._id,
-            message: item.message,
-            likes: item.hearts,
-            timestamp: new Date(item.createdAt),
-          });
-        });
+        const transformedData: Thought[] = data.thoughts.map((item: any) => ({
+          id: item._id,
+          message: item.message,
+          likes: item.hearts,
+          timestamp: new Date(item.createdAt),
+          createdBy: item.createdBy,
+        }));
 
         setThoughts(transformedData);
       } catch (error) {
@@ -78,6 +86,18 @@ export default function App() {
       setLikedThoughtIds(JSON.parse(stored));
     }
   }, []);
+
+  useEffect(() => {
+    if (token) {
+      try {
+        const decoded = jwtDecode<DecodedToken>(token);
+        setCurrentUserId(decoded.id);
+      } catch (err) {
+        console.error("Invalid token", err);
+        setCurrentUserId(null);
+      }
+    }
+  }, [token]);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -98,7 +118,7 @@ export default function App() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ message }),
       });
@@ -112,6 +132,7 @@ export default function App() {
           message: newThoughtData.message,
           likes: newThoughtData.hearts,
           timestamp: new Date(newThoughtData.createdAt),
+          createdBy: newThoughtData.createdBy,
         };
         setThoughts([newThought, ...thoughts]);
 
@@ -132,7 +153,7 @@ export default function App() {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ message: newMessage }),
       });
@@ -164,7 +185,7 @@ export default function App() {
       const response = await fetch(`${API_BASE}/thoughts/${id}`, {
         method: "DELETE",
         headers: {
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -172,7 +193,6 @@ export default function App() {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      // Ta bort från state om lyckat
       setThoughts((prev) => prev.filter((thought) => thought.id !== id));
     } catch (error) {
       console.error("Failed to delete thought", error);
@@ -250,6 +270,7 @@ export default function App() {
             onLike={handleLike}
             onDelete={handleDelete}
             onEdit={handleEdit}
+            currentUserId={currentUserId}
           />
           <MyLikedThoughts
             thoughts={thoughts}

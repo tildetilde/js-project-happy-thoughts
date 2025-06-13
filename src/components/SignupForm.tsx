@@ -27,6 +27,7 @@ export default function SignupForm({ onSignup }: Props) {
       if (!response.ok) {
         setError(data.message || "Signup failed");
       } else {
+        localStorage.setItem("token", data.token);
         onSignup(data.token);
       }
     } catch (err) {
