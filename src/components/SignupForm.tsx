@@ -11,9 +11,15 @@ export default function SignupForm({ onSignup }: Props) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  const isValidEmail = (email: string) => /^\S+@\S+\.\S+$/.test(email);
+
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    if (!isValidEmail(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
 
     try {
       const response = await fetch(`${API}/users/register`, {
@@ -49,6 +55,13 @@ export default function SignupForm({ onSignup }: Props) {
         onChange={(e) => setEmail(e.target.value)}
         required
       />
+
+      {error && (
+        <p className="text-red-600 text-sm mt-1" aria-live="polite">
+          {error}
+        </p>
+      )}
+
       <input
         className="w-full border p-2 rounded"
         type="password"
@@ -63,7 +76,6 @@ export default function SignupForm({ onSignup }: Props) {
       >
         Create Account
       </button>
-      {error && <p className="text-red-600">{error}</p>}
     </form>
   );
 }
