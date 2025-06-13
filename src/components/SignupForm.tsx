@@ -11,15 +11,9 @@ export default function SignupForm({ onSignup }: Props) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const isValidEmail = (email: string) => /^\S+@\S+\.\S+$/.test(email);
-
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    if (!isValidEmail(email)) {
-      setError("Please enter a valid email address");
-      return;
-    }
 
     try {
       const response = await fetch(`${API}/users/register`, {
