@@ -239,7 +239,7 @@ export default function App() {
                 setShowLogin(true);
                 setShowSignup(false);
               }}
-              className="text-sm text-blue-600 hover:underline"
+              className="text-gray-700 text-sm hover:underline"
             >
               Log in
             </button>
@@ -248,7 +248,7 @@ export default function App() {
                 setShowSignup(true);
                 setShowLogin(false);
               }}
-              className="text-sm text-green-600 hover:underline"
+              className="text-gray-700 text-sm hover:underline"
             >
               Sign up
             </button>
